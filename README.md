@@ -1,227 +1,237 @@
-# Retail Sales Analysis SQL Project
+# Ola Cab Analysis - SQL & PowerBI Project
 
 ## Project Overview
 
-**Project Title**: Retail Sales Analysis  
-**Level**: Beginner  
-**Database**: `p1_retail_db`
+**Project Title**: Cab Analysis  
+**Database**: `ola_db`
 
-This project is designed to demonstrate SQL skills and techniques typically used by data analysts to explore, clean, and analyze retail sales data. The project involves setting up a retail sales database, performing exploratory data analysis (EDA), and answering specific business questions through SQL queries. This project is ideal for those who are starting their journey in data analysis and want to build a solid foundation in SQL.
+This project is designed to demonstrate SQL skills or PowerBI skills and techniques typically used by data analysts to explore, clean, and analyze retail sales data. The project involves setting up a Cab Bookings database, performing exploratory data analysis (EDA), and answering specific business questions through SQL queries then create a interactive dashboaard on Power BI.
 
 ## Objectives
 
-1. **Set up a retail sales database**: Create and populate a retail sales database with the provided sales data.
+1. **Set up a Bookings database**: Create and populate a Bookings database with the provided Bookings data.
 2. **Data Cleaning**: Identify and remove any records with missing or null values.
 3. **Exploratory Data Analysis (EDA)**: Perform basic exploratory data analysis to understand the dataset.
 4. **Business Analysis**: Use SQL to answer specific business questions and derive insights from the sales data.
+5. **Dashboard**: Use Microsoft Power BI tool to create a interactive dashboard to visulaize thte analysis for deep understandings.
 
 ## Project Structure
 
 ### 1. Database Setup
 
-- **Database Creation**: The project starts by creating a database named `p1_retail_db`.
-- **Table Creation**: A table named `retail_sales` is created to store the sales data. The table structure includes columns for transaction ID, sale date, sale time, customer ID, gender, age, product category, quantity sold, price per unit, cost of goods sold (COGS), and total sale amount.
+- **Database Creation**: The project starts by creating a database named `ola_db`.
+- **Table Creation**: A table named `bookings` is created to store the cab bookings data. The table structure includes columns for Date, Time, Booking_ID, Booking_Status, Customer_ID, Vehicle_Type, Pickup_Location, Drop_Location, V_TAT, C_TAT, Canceled_Rides_by_Customer, Canceled_Rides_by_Driver, Incomplete_Rides, Incomplete_Rides_Reason	Booking_Value, Payment_Method, Ride_Distance, Driver_Ratings, Customer_Rating.
 
 ```sql
-CREATE DATABASE p1_retail_db;
+CREATE DATABASE ola_db;
+USE ola_db;
 
-CREATE TABLE retail_sales
+CREATE TABLE bookings 
 (
-    transactions_id INT PRIMARY KEY,
-    sale_date DATE,	
-    sale_time TIME,
-    customer_id INT,	
-    gender VARCHAR(10),
-    age INT,
-    category VARCHAR(35),
-    quantity INT,
-    price_per_unit FLOAT,	
-    cogs FLOAT,
-    total_sale FLOAT
+date DATE,
+time TIME,
+booking_id VARCHAR(15),
+booking_starus VARCHAR(20),
+customer_id VARCHAR(10),
+vehicle_type VARCHAR(15),
+pickup_location VARCHAR(20),
+drop_location VARCHAR(20),
+v_tat INT,
+c_tat INT,
+canceled_rides_by_customer VARCHAR(50),
+canceled_rides_by_driver VARCHAR(40),
+incomplete_rides VARCHAR(4),
+incomplete_rides_reasons VARCHAR(20),
+booking_value INT,
+payment_method VARCHAR(15),
+ride_distance INT,
+driver_rating INT,
+customer_rating INT
 );
-```
-
-### 2. Data Exploration & Cleaning
-
-- **Record Count**: Determine the total number of records in the dataset.
-- **Customer Count**: Find out how many unique customers are in the dataset.
-- **Category Count**: Identify all unique product categories in the dataset.
-- **Null Value Check**: Check for any null values in the dataset and delete records with missing data.
-
-```sql
-SELECT COUNT(*) FROM retail_sales;
-SELECT COUNT(DISTINCT customer_id) FROM retail_sales;
-SELECT DISTINCT category FROM retail_sales;
-
-SELECT * FROM retail_sales
-WHERE 
-    sale_date IS NULL OR sale_time IS NULL OR customer_id IS NULL OR 
-    gender IS NULL OR age IS NULL OR category IS NULL OR 
-    quantity IS NULL OR price_per_unit IS NULL OR cogs IS NULL;
-
-DELETE FROM retail_sales
-WHERE 
-    sale_date IS NULL OR sale_time IS NULL OR customer_id IS NULL OR 
-    gender IS NULL OR age IS NULL OR category IS NULL OR 
-    quantity IS NULL OR price_per_unit IS NULL OR cogs IS NULL;
 ```
 
 ### 3. Data Analysis & Findings
 
 The following SQL queries were developed to answer specific business questions:
 
-1. **Write a SQL query to retrieve all columns for sales made on '2022-11-05**:
+1. **-- 1. Retrieve all successful bookings --**:
 ```sql
-SELECT *
-FROM retail_sales
-WHERE sale_date = '2022-11-05';
+CREATE VIEW success_bookings AS
+SELECT * FROM bookings
+WHERE booking_status = 'Success';
 ```
 
-2. **Write a SQL query to retrieve all transactions where the category is 'Clothing' and the quantity sold is more than 4 in the month of Nov-2022**:
+2. **Find the average ride distance for each vehicle type**:
 ```sql
-SELECT 
-  *
-FROM retail_sales
+CREATE VIEW ride_dist_of_each_vehicle AS
+SELECT vehicle_type,
+	   AVG(ride_distance) AS avg_ride_dist FROM bookings
+GROUP BY 
+	    vehicle_type;
+```
+
+3. **Get the total number of cancelled rides by customers.**:
+```sql
+CREATE VIEW cancelled_rides_by_customers AS
+SELECT COUNT(*) FROM bookings
+WHERE Booking_Status = 'canceled by customer';
+```
+
+4. **List the top 5 customers who booked the highest number of rides.**:
+```sql
+CREATE VIEW top_5_customer_with_high_bookings AS
+SELECT Customer_ID, COUNT(booking_id) AS total_book_rides
+FROM bookings
+GROUP BY Customer_ID
+ORDER BY total_book_rides DESC
+LIMIT 5 ;
+```
+
+5. **Get the number of rides cancelled by drivers due to personal and car-related issues.**:
+```sql
+CREATE VIEW rides_cancelled_by_drivers_prsnl_car_issues AS
+SELECT COUNT(*)
+FROM bookings
+WHERE Canceled_Rides_by_Driver = 'Personal & Car related issue';
+```
+
+6. **Find the maximum and minimum driver ratings for Prime Sedan bookings.**:
+```sql
+CREATE VIEW max_min_driver_ratings_Prime_Sedan_bookings AS
+SELECT MAX(Driver_Rating),
+	   MIN(Driver_Rating) 
+FROM bookings
 WHERE 
-    category = 'Clothing'
-    AND 
-    TO_CHAR(sale_date, 'YYYY-MM') = '2022-11'
-    AND
-    quantity >= 4
+	 Vehicle_Type = 'Prime Sedan';
 ```
 
-3. **Write a SQL query to calculate the total sales (total_sale) for each category.**:
+7. **Retrieve all rides where payment was made using UPI**:
 ```sql
-SELECT 
-    category,
-    SUM(total_sale) as net_sale,
-    COUNT(*) as total_orders
-FROM retail_sales
-GROUP BY 1
+SCREATE VIEW pay_by_UPI AS
+SELECT * FROM bookings
+WHERE payment_method = 'UPI';
 ```
 
-4. **Write a SQL query to find the average age of customers who purchased items from the 'Beauty' category.**:
+8. **Find the average customer rating per vehicle type. **:
 ```sql
-SELECT
-    ROUND(AVG(age), 2) as avg_age
-FROM retail_sales
-WHERE category = 'Beauty'
+CREATE VIEW avg_rating_each_vehicle AS
+SELECT Vehicle_Type, 
+	   AVG(Customer_Rating) 
+FROM bookings
+GROUP BY 
+	   Vehicle_Type;
 ```
 
-5. **Write a SQL query to find all transactions where the total_sale is greater than 1000.**:
+9. **Calculate the total booking value of rides completed successfully.**:
 ```sql
-SELECT * FROM retail_sales
-WHERE total_sale > 1000
+CREATE VIEW revenue_successful_bookings AS
+SELECT SUM(Booking_Value) AS success_ride_revenue FROM bookings
+WHERE Booking_Status = 'Success';
 ```
 
-6. **Write a SQL query to find the total number of transactions (transaction_id) made by each gender in each category.**:
+10. **List all incomplete rides along with the reason**
 ```sql
-SELECT 
-    category,
-    gender,
-    COUNT(*) as total_trans
-FROM retail_sales
-GROUP 
-    BY 
-    category,
-    gender
-ORDER BY 1
+CREATE VIEW incomplete_ride_reasons AS
+SELECT Booking_ID, Incomplete_Rides_Reasons FROM bookings
+WHERE Incomplete_Rides = 'Yes';
 ```
 
-7. **Write a SQL query to calculate the average sale for each month. Find out best selling month in each year**:
-```sql
-SELECT 
-       year,
-       month,
-    avg_sale
-FROM 
-(    
-SELECT 
-    EXTRACT(YEAR FROM sale_date) as year,
-    EXTRACT(MONTH FROM sale_date) as month,
-    AVG(total_sale) as avg_sale,
-    RANK() OVER(PARTITION BY EXTRACT(YEAR FROM sale_date) ORDER BY AVG(total_sale) DESC) as rank
-FROM retail_sales
-GROUP BY 1, 2
-) as t1
-WHERE rank = 1
+# Create a view for each findings so that a manager can easily retieve the anlaysis
+-- 1. Retrieve all successful bookings --
+```SQL
+SELECT * FROM success_bookings;
 ```
 
-8. **Write a SQL query to find the top 5 customers based on the highest total sales **:
-```sql
-SELECT 
-    customer_id,
-    SUM(total_sale) as total_sales
-FROM retail_sales
-GROUP BY 1
-ORDER BY 2 DESC
-LIMIT 5
+```SQL
+-- 2. Get average ride distance for each vehicle type --
+SELECT * FROM ride_dist_of_each_vehicle;
 ```
 
-9. **Write a SQL query to find the number of unique customers who purchased items from each category.**:
-```sql
-SELECT 
-    category,    
-    COUNT(DISTINCT customer_id) as cnt_unique_cs
-FROM retail_sales
-GROUP BY category
+```SQL
+-- 3. Get the total number of cancelled rides by customers --
+SELECT * FROM cancelled_rides_by_customers;
 ```
 
-10. **Write a SQL query to create each shift and number of orders (Example Morning <12, Afternoon Between 12 & 17, Evening >17)**:
-```sql
-WITH hourly_sale
-AS
-(
-SELECT *,
-    CASE
-        WHEN EXTRACT(HOUR FROM sale_time) < 12 THEN 'Morning'
-        WHEN EXTRACT(HOUR FROM sale_time) BETWEEN 12 AND 17 THEN 'Afternoon'
-        ELSE 'Evening'
-    END as shift
-FROM retail_sales
-)
-SELECT 
-    shift,
-    COUNT(*) as total_orders    
-FROM hourly_sale
-GROUP BY shift
+```SQL
+-- 4. List the top 5 customers who booked the highest number of rides --
+SELECT * FROM top_5_customer_with_high_bookings;
+```
+
+```SQL
+-- 5. Get the number of rides cancelled by drivers due to personal and car-related issues --
+SELECT * FROM rides_cancelled_by_drivers_prsnl_car_issues;
+```
+
+```SQL
+-- 6. Find the maximum and minimum driver ratings for Prime Sedan bookings --
+SELECT * FROM max_min_driver_ratings_Prime_Sedan_bookings;
+```
+
+```SQL
+-- 7. Retrieve all rides where payment was made using UPI --
+SELECT * FROM pay_by_UPI;
+```
+
+```SQL
+-- 8. Find the average customer rating per vehicle type --
+SELECT * FROM avg_rating_each_vehicle;
+```
+
+```SQL
+-- 9. Calculate the total booking value of rides completed successfully --
+SELECT * FROM revenue_successful_bookings;
+```
+
+```SQL
+-- 10. List all incomplete rides along with the reason --
+SELECT * FROM incomplete_ride_reasons;
 ```
 
 ## Findings
 
-- **Customer Demographics**: The dataset includes customers from various age groups, with sales distributed across different categories such as Clothing and Beauty.
-- **High-Value Transactions**: Several transactions had a total sale amount greater than 1000, indicating premium purchases.
-- **Sales Trends**: Monthly analysis shows variations in sales, helping identify peak seasons.
-- **Customer Insights**: The analysis identifies the top-spending customers and the most popular product categories.
+- **1: Ride Bookings Over Time** :- ● The ride bookings fluctuate daily, showing a peak of 3,432 rides and a low of 3,072 during the observed period. 
+                                    ● Booking success rate is 62.09%, while cancellations by drivers, customers, and driver unavailability account for 37.91%. 
+                                    ● Total bookings during the period amounted to 103,024 rides.
+  
+- **Payment Preferences**: ● Cash payments dominate (19.3M transactions), followed by UPI (14.2M). Credit and Debit Cards are minimally used. 
+                           ● Highlighted preference for immediate, tangible payment methods.
+  
+- **Top Revenue-Generating Locations **: ● RT Nagar tops the chart with ₹777,106, closely followed by Nagarbhavi and Banashankari. 
+                                         ● The top 5 locations contribute significantly to overall revenue.
+  
+- **Customer and Driver Analysis**: ● Top customers bring in revenue between ₹5,938 and ₹6,019, highlighting the importance of retaining high-value customers. 
+                                    ● Average customer and driver ratings hover around 4.05, indicating generally satisfactory experiences. 
 
-## Reports
 
-- **Sales Summary**: A detailed report summarizing total sales, customer demographics, and category performance.
-- **Trend Analysis**: Insights into sales trends across different months and shifts.
-- **Customer Insights**: Reports on top customers and unique customer counts per category.
+- **Cancellation Insights**: ● Cancellation rate stands at 28.08%, with key issues being: 
+                                 ○ Personal and car-related problems (35.49%). 
+                                 ○ Customer-related cancellations (30.24%). 
+                                 ○ Incorrect addresses and over-permitted passengers. 
+                             ● Canceled bookings cost the company ₹21M in lost revenue.
+
+  
+## Suggestions
+
+1. Introduce incentive programs for drivers to minimize cancellations.
+2. Implement predictive algorithms to match drivers with high-demand areas, reducing "Driver Not Found" issues.
+3. Promote digital payments (UPI/Cards) through discounts or loyalty rewards.
+4. Enhance trust in online transactions via security and ease-of-use campaigns.
+5. Increase driver availability in these locations to capture latent demand. 
+6. Launch localized promotions to boost revenue further in these high-performing areas.
+7. Create a loyalty program to engage and retain top customers. 
+8. Provide regular feedback and training to drivers based on rating trends.
+  
+
 
 ## Conclusion
 
-This project serves as a comprehensive introduction to SQL for data analysts, covering database setup, data cleaning, exploratory data analysis, and business-driven SQL queries. The findings from this project can help drive business decisions by understanding sales patterns, customer behavior, and product performance.
+1. Offer real-time driver and customer support to address issues quickly. 
+2. Implement a stricter penalty policy for frequent cancellations by both drivers and customers. 
+3. Encourage customers to verify booking details to reduce errors.
 
-## How to Use
 
-1. **Clone the Repository**: Clone this project repository from GitHub.
-2. **Set Up the Database**: Run the SQL scripts provided in the `database_setup.sql` file to create and populate the database.
-3. **Run the Queries**: Use the SQL queries provided in the `analysis_queries.sql` file to perform your analysis.
-4. **Explore and Modify**: Feel free to modify the queries to explore different aspects of the dataset or answer additional business questions.
 
-## Author - Zero Analyst
-
-This project is part of my portfolio, showcasing the SQL skills essential for data analyst roles. If you have any questions, feedback, or would like to collaborate, feel free to get in touch!
-
-### Stay Updated and Join the Community
-
-For more content on SQL, data analysis, and other data-related topics, make sure to follow me on social media and join our community:
-
-- **YouTube**: [Subscribe to my channel for tutorials and insights](https://www.youtube.com/@zero_analyst)
-- **Instagram**: [Follow me for daily tips and updates](https://www.instagram.com/zero_analyst/)
-- **LinkedIn**: [Connect with me professionally](https://www.linkedin.com/in/najirr)
-- **Discord**: [Join our community to learn and grow together](https://discord.gg/36h5f2Z5PK)
+For more content on SQL, data analysis, and other data-related topics, Make sure to connect on Linkedin:
+- **LinkedIn**: [Connect with me professionally](www.linkedin.com/in/tarun-mahor)
 
 Thank you for your support, and I look forward to connecting with you!
