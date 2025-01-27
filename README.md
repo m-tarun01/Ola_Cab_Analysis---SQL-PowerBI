@@ -233,6 +233,6 @@ SELECT * FROM incomplete_ride_reasons;
 
 For more content on SQL, data analysis, and other data-related topics, Make sure to connect on Linkedin:
 - **LinkedIn**: [Connect with me professionally](www.linkedin.com/in/tarun-mahor)
-- **Dashboard** [Dashboard]([www.linkedin.com/in/tarun-mahor](https://app.powerbi.com/links/tCIOhcYYJM?ctid=d5c5977f-36d4-41a3-b226-4ad8f0e79bbc&pbi_source=linkShare)
+- **Dashboard** [Dashboard](https://app.powerbi.com/links/tCIOhcYYJM?ctid=d5c5977f-36d4-41a3-b226-4ad8f0e79bbc&pbi_source=linkShare)
 
 Thank you for your support, and I look forward to connecting with you!
