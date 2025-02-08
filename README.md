@@ -196,7 +196,7 @@ SELECT * FROM incomplete_ride_reasons;
 - **Payment Preferences**: ● Cash payments dominate (19.3M transactions), followed by UPI (14.2M). Credit and Debit Cards are minimally used. 
                            ● Highlighted preference for immediate, tangible payment methods.
   
-- **Top Revenue-Generating Locations **: ● RT Nagar tops the chart with ₹777,106, closely followed by Nagarbhavi and Banashankari. 
+- **Top Revenue-Generating Locations**: ● RT Nagar tops the chart with ₹777,106, closely followed by Nagarbhavi and Banashankari. 
                                          ● The top 5 locations contribute significantly to overall revenue.
   
 - **Customer and Driver Analysis**: ● Top customers bring in revenue between ₹5,938 and ₹6,019, highlighting the importance of retaining high-value customers. 
