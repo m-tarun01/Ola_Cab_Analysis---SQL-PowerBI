@@ -5,7 +5,7 @@
 **Project Title**: Cab Analysis  
 **Database**: `ola_db`
 
-This project is designed to demonstrate SQL skills or PowerBI skills and techniques typically used by data analysts to explore, clean, and analyze retail sales data. The project involves setting up a Cab Bookings database, performing exploratory data analysis (EDA), and answering specific business questions through SQL queries then create a interactive dashboaard on Power BI.
+This project is designed to demonstrate SQL skills or PowerBI skills and techniques typically used by data analysts to explore, clean, and analyze booking data. The project involves setting up a Cab Bookings database, performing exploratory data analysis (EDA), and answering specific business questions through SQL queries then create a interactive dashboaard on Power BI.
 
 ## Objectives
 
